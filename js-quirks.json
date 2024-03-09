@@ -1,0 +1,12 @@
+{
+  "title": "Weird stuff you can do in JavaScript",
+  "cards": [
+    {
+      "title": "Intro",
+      "pre": "",
+      "mid-text": "JavaScript lets you get away with a lot. This means that a lot of things can happen with very strange results.",
+      "mid-img": "https://raw.githubusercontent.com/voodootikigod/logo.js/master/js.jpg",
+      "post": "This lesson was going to contain more content, but it got temporarily scrapped in the interests of time. If you are seeing this, congratulations! You found an unlisted lesson! Now please go back to content that actually exists :)"
+    }
+  ]
+}

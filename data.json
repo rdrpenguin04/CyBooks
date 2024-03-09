@@ -1,0 +1,12 @@
+[
+  {
+    "file": "intro",
+    "title": "Introduction to JavaScript",
+    "description": "A head-first introduction to basic JavaScript programming concepts, including the console, control flow, and variables!"
+  },
+  {
+    "file": "css-intro",
+    "title": "Introduction to CSS",
+    "description": "An introduction to many commonly-used CSS properties and how to harness them."
+  }
+]

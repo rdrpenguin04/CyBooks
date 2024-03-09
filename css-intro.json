@@ -1,0 +1,24 @@
+{
+  "title": "Introduction to CSS",
+  "cards": [
+    {
+      "title": "Intro",
+      "pre": "Welcome to this introduction course! As this is only a demo of CyBooks course offerings, this lesson will be very fast-paced and may not cover everything in precise detail.",
+      "mid-text": "This page covers CSS, or Cascading Style Sheets. It's used to define how an HTML document is rendered and has lots ofoptions for controlling layout. It is a significantly complex layout engine. Let's dive in!",
+      "mid-img": "https://upload.wikimedia.org/wikipedia/commons/d/d5/CSS3_logo_and_wordmark.svg",
+      "post": "We hope you enjoy the lesson!"
+    },
+    {
+      "title": "Box model",
+      "pre": "In CSS, every element has a set of properties that help specify layout. These properties include:<br><ul><li>Margin</li><li>Border</li><li>Padding</li></ul>",
+      "mid-text": "<hl>Margin</hl> controls the space around the element and is always transparent.<br><hl>Border</hl> can be used to draw a visible border around any element. <br><hl>Padding</hl> is used to add a little bit of space between the border and any content inside the element.",
+      "mid-img": "https://cdn.glitch.global/cbe271b1-326e-4c75-aae2-6678d45f7015/box-model.png?v=1709953250613"
+    },
+    {
+      "title": "Colors",
+      "pre": "There are several ways to represent colors in CSS.",
+      "mid-text": "Many colors have their own names. Some examples are <code>red</code>, <code>olive</code>, or <code>firebrick</code>. Alternatively, they can be specified using hexidecimal values by using a hashtag, such as <code>#2675BF</code>. Other options include RGBA (red, green, blue, and alpha) or HSB (hue, saturation, brightness), which are used with functions instead, such as <code>rgba(180, 68, 125, 1)</code>",
+      "mid-img": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Linear_RGB_color_wheel.png/640px-Linear_RGB_color_wheel.png"
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+:root {
+  --accent-main: #C8102E;
+  --accent-secondary: #F1BE48;
+}
+
+.nav-item {
+  transition: background-color 0.3s;
+}
+
+.nav-item:hover {
+  background-color: grey;
+}
+
+.navbar-toggler {
+  transition: background-color 0.3s;
+}
+
+.navbar-toggler:hover {
+  background-color: grey;
+}
+
+a.btn {
+  background-color: var(--accent-secondary);
+  color: black;
+}
+
+a.btn:hover {
+  background-color: color-mix(in oklab, var(--accent-secondary), white);
+  color: grey;
+}
+
+.mid-card-img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: clamp(150px, 20vw, 400px);
+}
+
+body {
+  text-align: center;
+}
+main {
+  padding: 0 clamp(10px, 10%, 100px);
+}
+h1 {
+  font-size: 30pt;
+  margin: 20px;
+  text-shadow: 0 0 5px var(--accent-main);
+}
+h6 {
+  margin: 20px;
+}
+
+.img-container-l {
+  border-radius: 5px;
+  float: left;
+  margin: 15px;
+}
+.img-container-r {
+  border-radius: 5px;
+  float: right;
+  margin: 15px;
+}
+
+hl {
+  color: var(--accent-main);
+  font-weight: bold;
+}
+.card {
+  box-shadow: 0 0 5px var(--accent-main);
+  /*   border-color: var(--accent-main); */
+  /*   padding: 10px; */
+  text-align: left;
+  border-radius: 20px;
+  margin-top: 20px;
+}
+.navbar {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  padding: 10px 15px;
+}
+.small {
+  /*   position: -webkit-sticky;
+  position: sticky;
+  bottom: 0; */
+  padding-top: 30px;
+  color: #777777;
+  font-size: 10pt;
+}
+code {
+  border-radius: 5px;
+}
