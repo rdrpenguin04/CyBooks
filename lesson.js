@@ -1,10 +1,10 @@
 var hljs; // Editor, stop screaming at me, I came from outside this world
 
 async function loadLesson(lessonName) {
-  const req = await fetch(`/${lessonName}.json`);
+  const req = await fetch(`./${lessonName}.json`);
   if (req.status != 200) {
     location.href =
-      "https://when-you-have-a-midterm-project-but-you-forget-to-start-on-time.glitch.me/lesson.html?lesson=404";
+      "./lesson.html?lesson=404";
   }
   const lesson = await req.json();
   document.getElementById("lesson-name").innerText = lesson.title;

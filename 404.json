@@ -2,7 +2,7 @@
   "title": "Something went wrong!",
   "cards": [
     {
-      "mid-text": "The lesson we tried to fetch doesn't exist. Try looking for it on the <a href='/'>main page.</a>"
-    }    
+      "mid-text": "The lesson we tried to fetch doesn't exist. Try looking for it on the <a href='./'>main page.</a>"
+    }
   ]
 }

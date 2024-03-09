@@ -1,7 +1,7 @@
 (async () => {
-  const req = await fetch(`/data.json`);
+  const req = await fetch(`./data.json`);
   if (req.status != 200) {
-    // location.href = "https://when-you-have-a-midterm-project-but-you-forget-to-start-on-time.glitch.me/lesson.html?lesson=404";
+    console.log("something has gone very wrong...");
   }
   const data = await req.json();
   // document.getElementById("lesson-name").innerHTML = lesson.title;
@@ -22,7 +22,7 @@
             <p class="card-text">
               ${card.description}
             </p>
-            <a href="/lesson.html?lesson=${card.file}" class="btn">Try the course</a>
+            <a href="./lesson.html?lesson=${card.file}" class="btn">Try the course</a>
           </div>
     `;
     lessonBody.appendChild(newCard);
