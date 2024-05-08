@@ -1,0 +1,20 @@
+{
+  "name": "cybooks-backend",
+  "version": "0.1.0",
+  "description": "Backend for CyBooks, final project for SE 319 at Iowa State University",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mongodb": "^6.6.0",
+    "nanoid": "^5.0.7"
+  }
+}
