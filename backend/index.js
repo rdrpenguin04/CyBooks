@@ -133,6 +133,10 @@ app.get('/lessons', async (req, res) => {
     try {
         console.log('GET /lessons');
         let allLessons = await lessons.find({}).toArray();
+        allLessons.map(x => {
+            x.id = base64url.fromBase64(x._id.toString('base64'));
+            delete x._id;
+        });
         res.status(200).json(allLessons);
     } catch (error) {
         console.log(`caught error in GET /lessons: ${error}`);
