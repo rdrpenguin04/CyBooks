@@ -108,7 +108,7 @@ app.post('/login', async (req, res) => {
         let accountType = user.accountType;
 
         let session = nanoid();
-        loggedInUsers[session] = { username, accountType };
+        loggedInUsers[session] = { id: user._id, accountType };
         res.status(200).cookie('cybooks-session', session).json({ accountType });
     } catch (error) {
         console.log(`caught error in /login: ${error}`);
@@ -136,6 +136,8 @@ app.get('/lessons', async (req, res) => {
         allLessons.map(x => {
             x.id = base64url.fromBase64(x._id.toString('base64'));
             delete x._id;
+            x.author = base64url.fromBase64(x.author_id.toString('base64'));
+            delete x.author_id;
         });
         res.status(200).json(allLessons);
     } catch (error) {
@@ -148,7 +150,13 @@ app.get('/lessons/:id', async (req, res) => {
     try {
         console.log(`GET /lessons/${req.params.id}`);
         let _id = ObjectId.createFromBase64(base64url.toBase64(req.params.id));
+        
         let lesson = await lessons.findOne({ _id });
+        lesson.id = base64url.fromBase64(x._id.toString('base64'));
+        delete lesson._id;
+        lesson.author = base64url.fromBase64(x.author_id.toString('base64'));
+        delete lesson.author_id;
+
         res.status(200).json(lesson);
     } catch (error) {
         console.log(`caught error in GET /lessons/:id: ${error}`);
@@ -161,6 +169,12 @@ app.post('/lessons', async (req, res) => {
         console.log('POST /lessons');
         let result = await lessons.insertOne(req.body);
         let id = base64url.fromBase64(result.insertedId.toString('base64'));
+        let liveSession = loggedInUsers[req.cookies['cybooks-session']];
+        if (liveSession.accountType !== 'instructor') {
+            res.status(403).json({ error: 'insufficient permission' });
+            return;
+        }
+        req.body.author_id = liveSession.id;
         console.log(`new id: ${id}`);
         res.status(201).location(`/lessons/${id}`).json({ id, title: req.body.title });
     } catch (error) {
@@ -173,11 +187,21 @@ app.put('/lessons/:id', async (req, res) => {
     try {
         console.log(`PUT /lessons/${req.params.id}`);
         let _id = ObjectId.createFromBase64(base64url.toBase64(req.params.id));
+
+        let lesson = await lessons.findOne({ _id });
+
+        let liveSession = loggedInUsers[req.cookies['cybooks-session']];
+        if (liveSession.id != lesson.author_id) {
+            res.status(403).json({ error: 'insufficient permission' });
+            return;
+        }
+
         let updateData = { $set: {} };
         if (req.body.title)
             updateData.$set.title = String(req.body.title);
         if (req.body.cards)
             updateData.$set.cards = req.body.cards;
+
         // this is kinda half PUT and half PATCH
         await lessons.updateOne({ _id }, updateData);
         res.status(204).send();
@@ -191,10 +215,15 @@ app.delete('/lessons/:id', async (req, res) => {
     try {
         console.log(`DELETE /lessons/${req.params.id}`);
         let _id = ObjectId.createFromBase64(base64url.toBase64(req.params.id));
-        if (loggedInUsers[req.cookies['cybooks-session']].accountType != 'instructor') {
+
+        let lesson = await lessons.findOne({ _id });
+
+        let liveSession = loggedInUsers[req.cookies['cybooks-session']];
+        if (liveSession.id != lesson.author_id) {
             res.status(403).json({ error: 'insufficient permission' });
             return;
         }
+        
         await lessons.deleteOne({ _id });
         res.status(204).send();
     } catch (error) {
