@@ -1,3 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@keyframes enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+    /*     background-color: blue; */
+  }
+  25% {
+    /*     opacity: 100%; */
+    transform: scale(1.05);
+    /*     background-color: purple; */
+  }
+  100% {
+    opacity: 100%;
+    transform: scale(1);
+    /*     background-color: purple; */
+  }
+}
+
+.mid-card-img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: clamp(200px, 30vw, 600px);
+}
+
+code {
+    color: white;
+    background-color: black;
+}
