@@ -2,17 +2,17 @@ import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/react
 import { useContext } from "react";
 import { AccountInfoContext, ViewContext } from "../../Contexts";
 
-const navigation = ["Dashboard", "Read"];
+const navigationOriginal = ["Dashboard", "Read"];
 
 export default function MenuBar() {
-    const {view, setView} = useContext(ViewContext);
-    const {accountInfo} = useContext(AccountInfoContext);
+    const { view, setView } = useContext(ViewContext);
+    const { accountInfo } = useContext(AccountInfoContext);
     let loggedIn = accountInfo.accountType !== null;
 
-    if( accountInfo.accountType === "instructor" )
+    let navigation = [...navigationOriginal];
+
+    if (accountInfo.accountType === "instructor")
         navigation[2] = "Edit";
-    else if(accountInfo.accountType === null)
-        delete navigation[2];
 
     return (
         <Disclosure as="nav" className="bg-red-950">
