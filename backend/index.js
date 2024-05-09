@@ -16,11 +16,12 @@ const db = client.db(dbName);
 
 const users = db.collection('users');
 const lessons = db.collection('lessons');
+const completions = db.collection('completions');
 
 {
     // Database setup
     await users.createIndex({ 'username': 1 }, { unique: true });
-    await lessons.createIndex({ 'title': 1 });
+    await completions.createIndex({ 'user': 1, 'lesson': 1 }, { unique: true });
 }
 
 app.use(cors({
@@ -32,9 +33,7 @@ app.use(cookieParser());
 
 const loggedInUsers = {}; // could've used Map, but an object may actually be *more* performant :)
 
-// user structure: { username: String, accountType: String, passwordHash: String, salt: String }
 // Hi, I'm Ray, and I know how to properly store passwords
-
 app.post('/signup', async (req, res) => {
     try {
         console.log(`POST /signup, body = ${JSON.stringify(req.body)}`);
@@ -133,11 +132,12 @@ app.get('/lessons', async (req, res) => {
     try {
         console.log('GET /lessons');
         let allLessons = await lessons.find({}).toArray();
-        allLessons.map(x => {
+        allLessons = allLessons.map(x => {
             x.id = base64url.fromBase64(x._id.toString('base64'));
             delete x._id;
             x.author = base64url.fromBase64(x.author_id.toString('base64'));
             delete x.author_id;
+            return x;
         });
         res.status(200).json(allLessons);
     } catch (error) {
@@ -152,9 +152,9 @@ app.get('/lessons/:id', async (req, res) => {
         let _id = ObjectId.createFromBase64(base64url.toBase64(req.params.id));
 
         let lesson = await lessons.findOne({ _id });
-        lesson.id = base64url.fromBase64(x._id.toString('base64'));
+        lesson.id = base64url.fromBase64(lesson._id.toString('base64'));
         delete lesson._id;
-        lesson.author = base64url.fromBase64(x.author_id.toString('base64'));
+        lesson.author = base64url.fromBase64(lesson.author_id.toString('base64'));
         delete lesson.author_id;
 
         res.status(200).json(lesson);
@@ -169,7 +169,7 @@ app.post('/lessons', async (req, res) => {
         console.log('POST /lessons');
         let result = await lessons.insertOne(req.body);
         let id = base64url.fromBase64(result.insertedId.toString('base64'));
-        
+
         let liveSession = loggedInUsers[req.cookies['cybooks-session']];
         if (liveSession.accountType !== 'instructor') {
             res.status(403).json({ error: 'insufficient permission' });
@@ -225,7 +225,7 @@ app.delete('/lessons/:id', async (req, res) => {
             res.status(403).json({ error: 'insufficient permission' });
             return;
         }
-        
+
         await lessons.deleteOne({ _id });
         res.status(204).send();
     } catch (error) {
@@ -246,16 +246,18 @@ app.get('/instructors/:id/lessons', async (req, res) => {
                 res.status(400).json({ error: 'not an instructor' });
                 return;
             }
+            author_id = liveSession.id;
         } else {
-            author_id = ObjectId.fromBase64(base64url.toBase64(author_id));
+            author_id = ObjectId.createFromBase64(base64url.toBase64(author_id));
         }
 
         let allLessons = await lessons.find({ author_id }).toArray();
-        allLessons.map(x => {
+        allLessons = allLessons.map(x => {
             x.id = base64url.fromBase64(x._id.toString('base64'));
             delete x._id;
             x.author = base64url.fromBase64(x.author_id.toString('base64'));
             delete x.author_id;
+            return x;
         });
         res.status(200).json(allLessons);
     } catch (error) {
@@ -283,6 +285,103 @@ app.get('/instructors/:id/lessons/:lesson', async (req, res) => {
     }
 });
 
+app.get('/students/:id/completions', async (req, res) => {
+    try {
+        console.log(`GET /students/${req.params.id}/completions`);
+
+        let user = req.params.id;
+
+        if (user === 'me') {
+            let liveSession = loggedInUsers[req.cookies['cybooks-session']];
+            if (liveSession.accountType !== 'student') {
+                res.status(400).json({ error: 'not a student' });
+                return;
+            }
+            user = liveSession.id;
+        } else {
+            user = ObjectId.createFromBase64(base64url.toBase64(user));
+        }
+
+        let completionsForStudent = await completions.find({ user }).toArray();
+        completionsForStudent = completionsForStudent.map(x => {
+            delete x._id;
+            delete x.user;
+            x.lesson = base64url.fromBase64(x.lesson.toString('base64'));
+            return x;
+        });
+        res.status(200).json(completionsForStudent);
+    } catch (error) {
+        console.log(`caught error in GET /students/:id/completions: ${error}`);
+        res.status(500).json({ error: 'internal server error' });
+    }
+});
+
+app.get('/students/:id/completions/:lesson', async (req, res) => {
+    try {
+        console.log(`GET /students/${req.params.id}/completions/${req.params.lesson}`);
+
+        let user = req.params.id;
+
+        if (user === 'me') {
+            let liveSession = loggedInUsers[req.cookies['cybooks-session']];
+            if (liveSession.accountType !== 'student') {
+                res.status(400).json({ error: 'not a student' });
+                return;
+            }
+            user = liveSession.id;
+        } else {
+            user = ObjectId.createFromBase64(base64url.toBase64(user));
+        }
+
+        let completion = await completions.findOne({ user, lesson: ObjectId.createFromBase64(base64url.toBase64(req.params.lesson)) });
+        completionsForStudent = completionsForStudent.map(x => {
+            delete x._id;
+            delete x.user;
+            delete x.lesson;
+            return x;
+        });
+        res.status(200).json(completion);
+    } catch (error) {
+        console.log(`caught error in GET /students/:id/completions/:lesson: ${error}`);
+        res.status(500).json({ error: 'internal server error' });
+    }
+});
+
+app.put('/students/:id/completions/:lesson', async (req, res) => {
+    try {
+        console.log(`PUT /students/${req.params.id}/completions/${req.params.lesson}`);
+
+        let user = req.params.id;
+
+        if (user === 'me') {
+            let liveSession = loggedInUsers[req.cookies['cybooks-session']];
+            if (liveSession.accountType !== 'student') {
+                res.status(400).json({ error: 'not a student' });
+                return;
+            }
+            user = liveSession.id;
+        } else {
+            user = ObjectId.createFromBase64(base64url.toBase64(user));
+        }
+
+        let updateData = {
+            $set: {
+                'progress': req.body.progress,
+                'checkpoints': req.body.checkpoints,
+            }
+        };
+
+        let result = await completions.updateOne({ user, lesson: ObjectId.createFromBase64(base64url.toBase64(req.params.lesson)) }, updateData, { upsert: true });
+        if (result.upsertedId)
+            res.status(201).send();
+        else
+            res.status(204).send();
+    } catch (error) {
+        console.log(`caught error in GET /students/:id/completions/:lesson: ${error}`);
+        res.status(500).json({ error: 'internal server error' });
+    }
+});
+
 let listener = app.listen(8081, () => {
-    console.log(`Listening on port ${listener.address().port}`)
+    console.log(`Listening on port ${listener.address().port}`);
 });
