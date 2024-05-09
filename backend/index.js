@@ -132,11 +132,12 @@ app.get('/lessons', async (req, res) => {
     try {
         console.log('GET /lessons');
         let allLessons = await lessons.find({}).toArray();
-        allLessons.map(x => {
+        allLessons = allLessons.map(x => {
             x.id = base64url.fromBase64(x._id.toString('base64'));
             delete x._id;
             x.author = base64url.fromBase64(x.author_id.toString('base64'));
             delete x.author_id;
+            return x;
         });
         res.status(200).json(allLessons);
     } catch (error) {
@@ -251,11 +252,12 @@ app.get('/instructors/:id/lessons', async (req, res) => {
         }
 
         let allLessons = await lessons.find({ author_id }).toArray();
-        allLessons.map(x => {
+        allLessons = allLessons.map(x => {
             x.id = base64url.fromBase64(x._id.toString('base64'));
             delete x._id;
             x.author = base64url.fromBase64(x.author_id.toString('base64'));
             delete x.author_id;
+            return x;
         });
         res.status(200).json(allLessons);
     } catch (error) {
@@ -301,7 +303,12 @@ app.get('/students/:id/completions', async (req, res) => {
         }
 
         let completionsForStudent = await completions.find({ user }).toArray();
-
+        completionsForStudent = completionsForStudent.map(x => {
+            delete x._id;
+            delete x.user;
+            x.lesson = base64url.fromBase64(x.lesson.toString('base64'));
+            return x;
+        });
         res.status(200).json(completionsForStudent);
     } catch (error) {
         console.log(`caught error in GET /students/:id/completions: ${error}`);
@@ -327,8 +334,45 @@ app.get('/students/:id/completions/:lesson', async (req, res) => {
         }
 
         let completion = await users.findOne({ user, lesson: ObjectId.fromBase64(base64url.toBase64(req.params.lesson)) });
-
+        completionsForStudent = completionsForStudent.map(x => {
+            delete x._id;
+            delete x.user;
+            delete x.lesson;
+            return x;
+        });
         res.status(200).json(completion);
+    } catch (error) {
+        console.log(`caught error in GET /students/:id/completions/:lesson: ${error}`);
+        res.status(500).json({ error: 'internal server error' });
+    }
+});
+
+app.put('/students/:id/completions/:lesson', async (req, res) => {
+    try {
+        console.log(`PUT /students/${req.params.id}/completions/${req.params.lesson}`);
+
+        let user = req.params.id;
+
+        if (user === 'me') {
+            let liveSession = loggedInUsers[req.cookies['cybooks-session']];
+            if (liveSession.accountType !== 'student') {
+                res.status(400).json({ error: 'not a student' });
+                return;
+            }
+            user = liveSession.id;
+        } else {
+            user = ObjectId.fromBase64(base64url.toBase64(user));
+        }
+
+        let updateData = {
+            $set: {
+                'progress': req.body.progress,
+                'checkpoints': req.body.checkpoints,
+            }
+        };
+
+        await users.updateOne({ user, lesson: ObjectId.fromBase64(base64url.toBase64(req.params.lesson)) }, updateData, { upsert: true });
+        res.status(204).send();
     } catch (error) {
         console.log(`caught error in GET /students/:id/completions/:lesson: ${error}`);
         res.status(500).json({ error: 'internal server error' });
