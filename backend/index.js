@@ -150,7 +150,7 @@ app.get('/lessons/:id', async (req, res) => {
     try {
         console.log(`GET /lessons/${req.params.id}`);
         let _id = ObjectId.createFromBase64(base64url.toBase64(req.params.id));
-        
+
         let lesson = await lessons.findOne({ _id });
         lesson.id = base64url.fromBase64(x._id.toString('base64'));
         delete lesson._id;
@@ -169,12 +169,14 @@ app.post('/lessons', async (req, res) => {
         console.log('POST /lessons');
         let result = await lessons.insertOne(req.body);
         let id = base64url.fromBase64(result.insertedId.toString('base64'));
+        
         let liveSession = loggedInUsers[req.cookies['cybooks-session']];
         if (liveSession.accountType !== 'instructor') {
             res.status(403).json({ error: 'insufficient permission' });
             return;
         }
         req.body.author_id = liveSession.id;
+
         console.log(`new id: ${id}`);
         res.status(201).location(`/lessons/${id}`).json({ id, title: req.body.title });
     } catch (error) {
@@ -228,6 +230,66 @@ app.delete('/lessons/:id', async (req, res) => {
         res.status(204).send();
     } catch (error) {
         console.log(`caught error in DELETE /lessons/:id: ${error}`);
+        res.status(500).json({ error: 'internal server error' });
+    }
+});
+
+app.get('/instructors/:id/lessons', async (req, res) => {
+    try {
+        console.log(`GET /instructors/${req.params.id}/lessons`);
+
+        let author_id = req.params.id;
+
+        if (author_id === 'me') {
+            let liveSession = loggedInUsers[req.cookies['cybooks-session']];
+            if (liveSession.accountType !== 'instructor') {
+                res.status(400).json({ error: 'not an instructor' });
+                return;
+            }
+        } else {
+            author_id = ObjectId.fromBase64(base64url.toBase64(author_id));
+        }
+
+        let allLessons = await lessons.find({ author_id }).toArray();
+        allLessons.map(x => {
+            x.id = base64url.fromBase64(x._id.toString('base64'));
+            delete x._id;
+            x.author = base64url.fromBase64(x.author_id.toString('base64'));
+            delete x.author_id;
+        });
+        res.status(200).json(allLessons);
+    } catch (error) {
+        console.log(`caught error in GET /instructors/:id/lessons: ${error}`);
+        res.status(500).json({ error: 'internal server error' });
+    }
+});
+
+app.get('/instructors/:id/lessons/:lesson', async (req, res) => {
+    try {
+        console.log(`GET /instructors/${req.params.id}/lessons/${req.params.lesson}`);
+
+        let author_id = req.params.id;
+
+        if (author_id === 'me') {
+            let liveSession = loggedInUsers[req.cookies['cybooks-session']];
+            if (liveSession.accountType !== 'instructor') {
+                res.status(400).json({ error: 'not an instructor' });
+                return;
+            }
+        } else {
+            author_id = ObjectId.fromBase64(base64url.toBase64(author_id));
+        }
+
+        let allLessons = await lessons.find({ author_id }).toArray();
+        allLessons.map(x => {
+            x.id = base64url.fromBase64(x._id.toString('base64'));
+            delete x._id;
+            x.author = base64url.fromBase64(x.author_id.toString('base64'));
+            delete x.author_id;
+        });
+        res.status(200).json(allLessons);
+    } catch (error) {
+        console.log(`caught error in GET /instructors/:id/lessons: ${error}`);
         res.status(500).json({ error: 'internal server error' });
     }
 });
