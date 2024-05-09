@@ -1,6 +1,7 @@
 import lesson from './testlesson.json';
+import LessonRenderer from '../components/LessonRenderer';
 
 export default function Editor() {
 
-    return JSON.stringify(lesson);
+    return <LessonRenderer editor></LessonRenderer>;
 }
