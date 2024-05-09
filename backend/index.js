@@ -356,7 +356,7 @@ app.put('/students/:id/completions/:lesson', async (req, res) => {
         if (user === 'me') {
             let liveSession = loggedInUsers[req.cookies['cybooks-session']];
             if (liveSession.accountType !== 'student') {
-                res.status(400).json({ error: 'not a student' });
+                res.status(400).json({ error: 'not an student' });
                 return;
             }
             user = liveSession.id;
@@ -378,6 +378,175 @@ app.put('/students/:id/completions/:lesson', async (req, res) => {
             res.status(204).send();
     } catch (error) {
         console.log(`caught error in GET /students/:id/completions/:lesson: ${error}`);
+        res.status(500).json({ error: 'internal server error' });
+    }
+});
+
+app.get('/instructors/:id/completions', async (req, res) => {
+    try {
+        console.log(`GET /instructors/${req.params.id}/completions`);
+
+        let user = req.params.id;
+
+        if (user === 'me') {
+            let liveSession = loggedInUsers[req.cookies['cybooks-session']];
+            if (liveSession.accountType !== 'instructor') {
+                res.status(400).json({ error: 'not a instructor' });
+                return;
+            }
+            user = liveSession.id;
+        } else {
+            user = ObjectId.createFromBase64(base64url.toBase64(user));
+        }
+
+        let completionsForStudent = await completions.find({ user }).toArray();
+        completionsForStudent = completionsForStudent.map(x => {
+            delete x._id;
+            delete x.user;
+            x.lesson = base64url.fromBase64(x.lesson.toString('base64'));
+            return x;
+        });
+        res.status(200).json(completionsForStudent);
+    } catch (error) {
+        console.log(`caught error in GET /instructors/:id/completions: ${error}`);
+        res.status(500).json({ error: 'internal server error' });
+    }
+});
+
+// Note to future self: this is literally the exact same as /students/:id/completions. Maybe make it the same next time :)
+app.get('/instructors/:id/completions/:lesson', async (req, res) => {
+    try {
+        console.log(`GET /instructors/${req.params.id}/completions/${req.params.lesson}`);
+
+        let user = req.params.id;
+
+        if (user === 'me') {
+            let liveSession = loggedInUsers[req.cookies['cybooks-session']];
+            if (liveSession.accountType !== 'instructor') {
+                res.status(400).json({ error: 'not an instructor' });
+                return;
+            }
+            user = liveSession.id;
+        } else {
+            user = ObjectId.createFromBase64(base64url.toBase64(user));
+        }
+
+        let completion = await completions.findOne({ user, lesson: ObjectId.createFromBase64(base64url.toBase64(req.params.lesson)) });
+        completionsForStudent = completionsForStudent.map(x => {
+            delete x._id;
+            delete x.user;
+            delete x.lesson;
+            return x;
+        });
+        res.status(200).json(completion);
+    } catch (error) {
+        console.log(`caught error in GET /instructors/:id/completions: ${error}`);
+        res.status(500).json({ error: 'internal server error' });
+    }
+});
+
+app.put('/instructors/:id/completions/:lesson', async (req, res) => {
+    try {
+        console.log(`PUT /instructors/${req.params.id}/completions/${req.params.lesson}`);
+
+        let user = req.params.id;
+
+        if (user === 'me') {
+            let liveSession = loggedInUsers[req.cookies['cybooks-session']];
+            if (liveSession.accountType !== 'instructor') {
+                res.status(400).json({ error: 'not an instructor' });
+                return;
+            }
+            user = liveSession.id;
+        } else {
+            user = ObjectId.createFromBase64(base64url.toBase64(user));
+        }
+
+        let updateData = {
+            $set: {
+                'progress': req.body.progress,
+                'checkpoints': req.body.checkpoints,
+            }
+        };
+
+        let result = await completions.updateOne({ user, lesson: ObjectId.createFromBase64(base64url.toBase64(req.params.lesson)) }, updateData, { upsert: true });
+        if (result.upsertedId)
+            res.status(201).send();
+        else
+            res.status(204).send();
+    } catch (error) {
+        console.log(`caught error in PUT /instructors/:id/completions/:lesson: ${error}`);
+        res.status(500).json({ error: 'internal server error' });
+    }
+});
+
+app.get('/instructors/:id/lessons', async (req, res) => {
+    try {
+        console.log(`GET /instructors/${req.params.id}/lessons`);
+
+        let user = req.params.id;
+
+        if (user === 'me') {
+            let liveSession = loggedInUsers[req.cookies['cybooks-session']];
+            if (liveSession.accountType !== 'instructor') {
+                res.status(400).json({ error: 'not an instructor' });
+                return;
+            }
+            user = liveSession.id;
+        } else {
+            user = ObjectId.createFromBase64(base64url.toBase64(user));
+        }
+
+        let allLessons = await lessons.find({ author_id: user }).toArray();
+        allLessons = allLessons.map(x => {
+            x.id = base64url.fromBase64(x._id.toString('base64'));
+            delete x._id;
+            x.author = base64url.fromBase64(x.author_id.toString('base64'));
+            delete x.author_id;
+            return x;
+        });
+        res.status(200).json(allLessons);
+    } catch (error) {
+        console.log(`caught error in GET /instructors/:id/lessons: ${error}`);
+        res.status(500).json({ error: 'internal server error' });
+    }
+});
+
+app.get('/instructors/:id/lessons/:lesson/completions', async (req, res) => {
+    try {
+        console.log(`GET /instructors/${req.params.id}/lessons/${req.params.lesson}/completions`);
+
+        let user = req.params.id;
+
+        if (user === 'me') {
+            let liveSession = loggedInUsers[req.cookies['cybooks-session']];
+            if (liveSession.accountType !== 'instructor') {
+                res.status(400).json({ error: 'not an instructor' });
+                return;
+            }
+            user = liveSession.id;
+        } else {
+            user = ObjectId.createFromBase64(base64url.toBase64(user));
+        }
+
+        let lesson_id = ObjectId.createFromBase64(base64url.toBase64(req.params.lesson));
+
+        let lesson = lessons.find({ _id: lesson_id });
+
+        if (lesson.author != user) {
+            res.status(403).json({ error: 'insufficient permissions' });
+        }
+
+        let completionsForLesson = await lessons.find({ lesson: lesson_id }).toArray();
+        completionsForLesson = completionsForLesson.map(x => {
+            delete x._id;
+            x.user = base64url.fromBase64(x.user.toString('base64'));
+            delete x.lesson;
+            return x;
+        });
+        res.status(200).json(completionsForLesson);
+    } catch (error) {
+        console.log(`caught error in GET /instructors/:id/lessons/:lesson/completions: ${error}`);
         res.status(500).json({ error: 'internal server error' });
     }
 });
