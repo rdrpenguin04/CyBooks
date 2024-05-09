@@ -31,3 +31,27 @@ code {
     color: white;
     background-color: black;
 }
+
+.editBox {
+  position: relative;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  color: transparent;
+  background: transparent;
+  caret-color: white;
+  white-space: pre-wrap;
+  width: 100%;
+  overflow-wrap: break-word;
+}
+.highlightBox {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  white-space: pre-wrap;
+  pointer-events: none;
+  background-color: black;
+  width: 100%;
+  overflow-wrap: break-word;
+}

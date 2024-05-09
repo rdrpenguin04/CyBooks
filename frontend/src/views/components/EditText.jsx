@@ -4,7 +4,7 @@ export default function EditText(props) {
       {...props}
       contentEditable={props.editable}
       class={
-        (props.editable ? "bg-zinc-950 min-h-[50px] my-2 p-2 rounded " : "") +
+        (props.editable ? "bg-zinc-950 min-h-[30px] my-2 p-2 rounded " : "") +
         props.class
       }
     >

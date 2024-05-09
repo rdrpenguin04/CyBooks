@@ -1,18 +1,29 @@
 import lesson from "../pages/testlesson.json";
 import Card from "./Card";
 import EditText from "./EditText";
+import CodeEditor from "./CodeEditor";
+
 import HTMLReactParser, {
   attributesToProps,
 } from "html-react-parser/lib/index";
 import { Input, Label, Field, Button } from "@headlessui/react";
 
+import hljs from 'highlight.js/lib/core';
+import javascript from 'highlight.js/lib/languages/javascript';
+
+// Then register the languages you need
+hljs.registerLanguage('javascript', javascript);
+
 export default function LessonRenderer({ editor }) {
   let cardIndex = 0;
+  let interactiveIndex = 0;
 
   return (
     <>
       <EditText editable={editor} class="text-center text-4xl font-semibold" id="lesson-title">{lesson.title}</EditText>
       {lesson.cards.map((card, cardIndex) => {
+        console.log(card.interactive);
+        console.log(card.interactive && card.interactive.type === "code-editor");
         return (
           <Card>
               <EditText editable={editor}
@@ -24,7 +35,7 @@ export default function LessonRenderer({ editor }) {
               <EditText editable={editor} id={"card-" + cardIndex + "-pre"}>{card.pre}</EditText>
               <hr class="h-px m-4  border-0 bg-zinc-700" />
             <div>
-              {card["mid-img"] && (
+              {(card["mid-img"] || editor) && (
                 <img
                   id={"card-" + cardIndex + "-img"}
                   class={`float-${
@@ -43,12 +54,13 @@ export default function LessonRenderer({ editor }) {
                     className="mt-1 block bg-zinc-950 rounded"
                     name="password"
                     placeholder={
-                      document.getElementById("card-" + cardIndex + "-img").src
+                      document.getElementById("card-" + cardIndex + "-img")?.src
                     }
                     onChange={(e) => {
-                      document.getElementById(
+                      let i = document.getElementById(
                         "card-" + cardIndex + "-img"
-                      ).src = e.target.value
+                      );
+                      if(i) i.src = e.target.value
                         ? e.target.value
                         : e.target.placeholder;
                     }}
@@ -59,6 +71,8 @@ export default function LessonRenderer({ editor }) {
               {card.post && <hr class="h-px m-4  border-0 bg-zinc-700" />}
               <EditText editable={editor} id={"card-" + cardIndex + "-post"}>{card.post}</EditText>
             </div>
+            {card.interactive && card.interactive.type === "code-editor" &&
+              <CodeEditor id={interactiveIndex}>{card.interactive.initial}</CodeEditor>}
           </Card>
         );
       })}

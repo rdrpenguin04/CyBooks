@@ -3,24 +3,35 @@
   "cards": [
     {
       "title": "Intro",
-      "pre": "Welcome to this introduction course! As this is only a demo of CyBooks course offerings, this lesson will be very fast-paced and may not cover everything in precise detail.",
-      "mid-text": "This is the unofficial logo for JavaScript. Its simple design mirrors the surface-level simplicity of JavaScript, but under the hood, there are plenty of features to explore. <br> Insert some witty commentary about JS here. Matthew please add details.",
+      "pre": "Welcome to this introduction course!",
+      "mid-text": "This is the unofficial logo for JavaScript. Insert some witty commentary about JS here. Matthew please add details.",
       "mid-img": "https://raw.githubusercontent.com/voodootikigod/logo.js/master/js.jpg",
       "post": "We hope you enjoy the lesson!"
     },
     {
       "title": "Hello, world!",
       "pre": "The most simple thing to do in JavaScript coding is push data to the console.",
-      "mid-text": "The browser console is a useful tool to examine the state of a program as it's running. You can use JavaScript commands in it to display program variables or simulate some interactions, and you can also print to it from JavaScript code. Let's do that!",
+      "mid-text": "The browser console is a useful tool to examine the state of a program as it's running. Let's use it!",
       "mid-img": "https://commandlinefanatic.com/art041f002.png",
-      "post": "The code below prints \"Hello, world!\" to the console. Try editing it to print some other text! (code editor coming soon)"
+      "post": "The code below prints \"Hello, world!\" to the console. Try editing it to print some other text!",
+      "interactive": {
+        "type": "code-editor",
+        "lang": "js",
+        "features": [ "console" ],
+        "initial": "console.log(\"Hello, world!\");",
+        "expected": {
+          "changed": true,
+          "errors": false
+        }
+      }
     },
     {
-      "title": "Of age?",
-      "pre": "Without decision making, a computer may as well be a calculator. In JavaScript, we acheive decision making by use of \"control flow\" statements. Let's explore a few of these and make a simple program!",
-      "mid-text": "First, we'll introduce a new function. Last time, we explored the console; this time, we want to get input. We'll do this by the <code>prompt()</code> function. On the right is an example of it in action! <br> We're going to use an <code>if</code> statement in this example and do two different things, depending on whether the user is \"of age\" or not. <pre><code>if (prompt(\"How old are you?\") >= 21) {\n    alert(\"You can drink! Here's a toast!\");\n} else {\n    alert(\"You're too young; get out of my bar!\");\n}</code></pre>",
-      "mid-img": "https://cdn.glitch.global/cbe271b1-326e-4c75-aae2-6678d45f7015/Screenshot_20240308_200213.png?v=1709949748699",
-      "post": "Try modifying the code to check if the user is a legal adult (18 years old), but still too young to drink! Hint: <code>else if</code> can be used in place of the <code>else</code> statement to check a second condition. (code editor coming soon)"
+      "title": "Conclusion",
+      "pre": "Wow, short lesson!",
+      "mid-text": "We wanted to make an example for the proposal document, but we have a size limit.",
+      "interactive": {
+        "type": "complete-button"
+      }
     }
   ]
 }
