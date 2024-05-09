@@ -268,28 +268,17 @@ app.get('/instructors/:id/lessons/:lesson', async (req, res) => {
     try {
         console.log(`GET /instructors/${req.params.id}/lessons/${req.params.lesson}`);
 
-        let author_id = req.params.id;
+        let _id = ObjectId.createFromBase64(base64url.toBase64(req.params.lesson));
 
-        if (author_id === 'me') {
-            let liveSession = loggedInUsers[req.cookies['cybooks-session']];
-            if (liveSession.accountType !== 'instructor') {
-                res.status(400).json({ error: 'not an instructor' });
-                return;
-            }
-        } else {
-            author_id = ObjectId.fromBase64(base64url.toBase64(author_id));
-        }
+        let lesson = await lessons.findOne({ _id });
+        lesson.id = base64url.fromBase64(x._id.toString('base64'));
+        delete lesson._id;
+        lesson.author = base64url.fromBase64(x.author_id.toString('base64'));
+        delete lesson.author_id;
 
-        let allLessons = await lessons.find({ author_id }).toArray();
-        allLessons.map(x => {
-            x.id = base64url.fromBase64(x._id.toString('base64'));
-            delete x._id;
-            x.author = base64url.fromBase64(x.author_id.toString('base64'));
-            delete x.author_id;
-        });
-        res.status(200).json(allLessons);
+        res.status(200).json(lesson);
     } catch (error) {
-        console.log(`caught error in GET /instructors/:id/lessons: ${error}`);
+        console.log(`caught error in GET /instructors/:id/lessons/:lesson: ${error}`);
         res.status(500).json({ error: 'internal server error' });
     }
 });
