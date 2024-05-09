@@ -234,38 +234,6 @@ app.delete('/lessons/:id', async (req, res) => {
     }
 });
 
-app.get('/instructors/:id/lessons', async (req, res) => {
-    try {
-        console.log(`GET /instructors/${req.params.id}/lessons`);
-
-        let author_id = req.params.id;
-
-        if (author_id === 'me') {
-            let liveSession = loggedInUsers[req.cookies['cybooks-session']];
-            if (liveSession.accountType !== 'instructor') {
-                res.status(400).json({ error: 'not an instructor' });
-                return;
-            }
-            author_id = liveSession.id;
-        } else {
-            author_id = ObjectId.createFromBase64(base64url.toBase64(author_id));
-        }
-
-        let allLessons = await lessons.find({ author_id }).toArray();
-        allLessons = allLessons.map(x => {
-            x.id = base64url.fromBase64(x._id.toString('base64'));
-            delete x._id;
-            x.author = base64url.fromBase64(x.author_id.toString('base64'));
-            delete x.author_id;
-            return x;
-        });
-        res.status(200).json(allLessons);
-    } catch (error) {
-        console.log(`caught error in GET /instructors/:id/lessons: ${error}`);
-        res.status(500).json({ error: 'internal server error' });
-    }
-});
-
 app.get('/instructors/:id/lessons/:lesson', async (req, res) => {
     try {
         console.log(`GET /instructors/${req.params.id}/lessons/${req.params.lesson}`);
@@ -281,6 +249,32 @@ app.get('/instructors/:id/lessons/:lesson', async (req, res) => {
         res.status(200).json(lesson);
     } catch (error) {
         console.log(`caught error in GET /instructors/:id/lessons/:lesson: ${error}`);
+        res.status(500).json({ error: 'internal server error' });
+    }
+});
+
+app.get('/students/:id', async (req, res) => {
+    try {
+        console.log(`GET /students/${req.params.id}`);
+
+        let _id = req.params.id;
+
+        if (_id === 'me') {
+            let liveSession = loggedInUsers[req.cookies['cybooks-session']];
+            if (liveSession.accountType !== 'student') {
+                res.status(400).json({ error: 'not a student' });
+                return;
+            }
+            _id = liveSession.id;
+        } else {
+            _id = ObjectId.createFromBase64(base64url.toBase64(_id));
+        }
+
+        let user = await users.findOne({_id});
+
+        res.status(200).json({ username: user.username });
+    } catch (error) {
+        console.log(`caught error in GET /students/:id: ${error}`);
         res.status(500).json({ error: 'internal server error' });
     }
 });
