@@ -271,7 +271,7 @@ app.get('/students/:id', async (req, res) => {
             _id = ObjectId.createFromBase64(base64url.toBase64(_id));
         }
 
-        let user = await users.findOne({_id});
+        let user = await users.findOne({ _id });
 
         res.status(200).json({ username: user.username });
     } catch (error) {
@@ -329,12 +329,9 @@ app.get('/students/:id/completions/:lesson', async (req, res) => {
         }
 
         let completion = await completions.findOne({ user, lesson: ObjectId.createFromBase64(base64url.toBase64(req.params.lesson)) });
-        completionsForStudent = completionsForStudent.map(x => {
-            delete x._id;
-            delete x.user;
-            delete x.lesson;
-            return x;
-        });
+        delete completion._id;
+        delete completion.user;
+        delete completion.lesson;
         res.status(200).json(completion);
     } catch (error) {
         console.log(`caught error in GET /students/:id/completions/:lesson: ${error}`);
