@@ -21,7 +21,7 @@ const completions = db.collection('completions');
 {
     // Database setup
     await users.createIndex({ 'username': 1 }, { unique: true });
-    await users.createIndex({ 'user': 1, 'lesson': 1 }, { unique: true });
+    await completions.createIndex({ 'user': 1, 'lesson': 1 }, { unique: true });
 }
 
 app.use(cors({
@@ -152,9 +152,9 @@ app.get('/lessons/:id', async (req, res) => {
         let _id = ObjectId.createFromBase64(base64url.toBase64(req.params.id));
 
         let lesson = await lessons.findOne({ _id });
-        lesson.id = base64url.fromBase64(x._id.toString('base64'));
+        lesson.id = base64url.fromBase64(lesson._id.toString('base64'));
         delete lesson._id;
-        lesson.author = base64url.fromBase64(x.author_id.toString('base64'));
+        lesson.author = base64url.fromBase64(lesson.author_id.toString('base64'));
         delete lesson.author_id;
 
         res.status(200).json(lesson);
@@ -248,7 +248,7 @@ app.get('/instructors/:id/lessons', async (req, res) => {
             }
             author_id = liveSession.id;
         } else {
-            author_id = ObjectId.fromBase64(base64url.toBase64(author_id));
+            author_id = ObjectId.createFromBase64(base64url.toBase64(author_id));
         }
 
         let allLessons = await lessons.find({ author_id }).toArray();
@@ -299,7 +299,7 @@ app.get('/students/:id/completions', async (req, res) => {
             }
             user = liveSession.id;
         } else {
-            user = ObjectId.fromBase64(base64url.toBase64(user));
+            user = ObjectId.createFromBase64(base64url.toBase64(user));
         }
 
         let completionsForStudent = await completions.find({ user }).toArray();
@@ -330,10 +330,10 @@ app.get('/students/:id/completions/:lesson', async (req, res) => {
             }
             user = liveSession.id;
         } else {
-            user = ObjectId.fromBase64(base64url.toBase64(user));
+            user = ObjectId.createFromBase64(base64url.toBase64(user));
         }
 
-        let completion = await users.findOne({ user, lesson: ObjectId.fromBase64(base64url.toBase64(req.params.lesson)) });
+        let completion = await completions.findOne({ user, lesson: ObjectId.createFromBase64(base64url.toBase64(req.params.lesson)) });
         completionsForStudent = completionsForStudent.map(x => {
             delete x._id;
             delete x.user;
@@ -361,7 +361,7 @@ app.put('/students/:id/completions/:lesson', async (req, res) => {
             }
             user = liveSession.id;
         } else {
-            user = ObjectId.fromBase64(base64url.toBase64(user));
+            user = ObjectId.createFromBase64(base64url.toBase64(user));
         }
 
         let updateData = {
@@ -371,8 +371,11 @@ app.put('/students/:id/completions/:lesson', async (req, res) => {
             }
         };
 
-        await users.updateOne({ user, lesson: ObjectId.fromBase64(base64url.toBase64(req.params.lesson)) }, updateData, { upsert: true });
-        res.status(204).send();
+        let result = await completions.updateOne({ user, lesson: ObjectId.createFromBase64(base64url.toBase64(req.params.lesson)) }, updateData, { upsert: true });
+        if (result.upsertedId)
+            res.status(201).send();
+        else
+            res.status(204).send();
     } catch (error) {
         console.log(`caught error in GET /students/:id/completions/:lesson: ${error}`);
         res.status(500).json({ error: 'internal server error' });
