@@ -13,7 +13,7 @@ export default function Login() {
                     className='space-y-4 data-[disabled]:text-gray-200 transition-all duration-500'
                     disabled={(status === 'running' ? true : false)}
                 >
-                    <Legend className='text-xl font-bold transition-all duration-500'>Log In</Legend>
+                    <Legend className='text-4xl font-bold transition-all duration-500'>Log In</Legend>
                     <Field>
                         <Label className='block data-[disabled]:text-gray-200 transition-all duration-500'>Username</Label>
                         <Input className='mt-1 block bg-red-950 rounded disabled:text-gray-200 disabled:bg-rose-950 transition-all duration-500' name='username' />

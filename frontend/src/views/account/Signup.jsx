@@ -1,11 +1,10 @@
 import { Button, Field, Fieldset, Input, Label, Legend, Select } from "@headlessui/react";
 import { useContext, useState } from "react";
-import { AccountInfoContext, ViewContext } from "../../Contexts";
+import { ViewContext } from "../../Contexts";
 
 export default function Signup() {
     const [status, setStatus] = useState('');
     const { view, setView } = useContext(ViewContext);
-    const { setAccountInfo } = useContext(AccountInfoContext);
     return (
         <>
             <form>
@@ -13,7 +12,7 @@ export default function Signup() {
                     className='space-y-4 data-[disabled]:text-gray-200 transition-all duration-500'
                     disabled={(status === 'running' ? true : false)}
                 >
-                    <Legend className='text-xl font-bold transition-all duration-500'>Sign Up</Legend>
+                    <Legend className='text-4xl font-bold transition-all duration-500'>Sign Up</Legend>
                     <Field>
                         <Label className='block data-[disabled]:text-gray-200 transition-all duration-500'>Username</Label>
                         <Input className='mt-1 block bg-red-950 rounded disabled:text-gray-200 disabled:bg-rose-950 transition-all duration-500' name='username' />
