@@ -1,11 +1,13 @@
 import { useContext, useState } from "react";
 import { LessonIDContext, ViewContext } from "../../Contexts";
+import { useEffect } from 'react';
 
 export default function StudentDashboard() {
     const [myCompletions, setMyCompletions] = useState(null);
     const { setLessonID } = useContext(LessonIDContext);
     const { setView } = useContext(ViewContext);
 
+    useEffect(() => {
     fetch('//localhost:8081/students/me/completions', { credentials: 'include' })
         .then(x => x.json())
         .then(async completions => {
@@ -16,6 +18,7 @@ export default function StudentDashboard() {
             }
             setMyCompletions(completions);
         });
+    }, [])
 
     return myCompletions ? (<>
         <h1 className="text-4xl font-semibold">Welcome back!</h1>
