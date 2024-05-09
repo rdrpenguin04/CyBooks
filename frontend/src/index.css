@@ -3,28 +3,28 @@
 @tailwind utilities;
 
 @keyframes enter {
-  0% {
-    opacity: 0;
-    transform: scale(0.7);
-    /*     background-color: blue; */
-  }
-  25% {
-    /*     opacity: 100%; */
-    transform: scale(1.05);
-    /*     background-color: purple; */
-  }
-  100% {
-    opacity: 100%;
-    transform: scale(1);
-    /*     background-color: purple; */
-  }
+    0% {
+        opacity: 0;
+        transform: scale(0.7);
+        /*     background-color: blue; */
+    }
+    25% {
+        /*     opacity: 100%; */
+        transform: scale(1.05);
+        /*     background-color: purple; */
+    }
+    100% {
+        opacity: 100%;
+        transform: scale(1);
+        /*     background-color: purple; */
+    }
 }
 
 .mid-card-img {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  width: clamp(200px, 30vw, 900px);
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: clamp(200px, 30vw, 900px);
 }
 
 code {
@@ -33,25 +33,25 @@ code {
 }
 
 .editBox {
-  position: relative;
-  top: 0;
-  left: 0;
-  z-index: 1;
-  color: transparent;
-  background: transparent;
-  caret-color: white;
-  white-space: pre-wrap;
-  width: 100%;
-  overflow-wrap: break-word;
+    position: relative;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    color: transparent;
+    background: transparent;
+    caret-color: white;
+    white-space: pre-wrap;
+    width: 100%;
+    overflow-wrap: break-word;
 }
 .highlightBox {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 0;
-  white-space: pre-wrap;
-  pointer-events: none;
-  background-color: black;
-  width: 100%;
-  overflow-wrap: break-word;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    white-space: pre-wrap;
+    pointer-events: none;
+    background-color: black;
+    width: 100%;
+    overflow-wrap: break-word;
 }

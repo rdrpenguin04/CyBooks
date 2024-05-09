@@ -1,4 +1,8 @@
-import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/react";
+import {
+    Disclosure,
+    DisclosureButton,
+    DisclosurePanel,
+} from "@headlessui/react";
 import { useContext } from "react";
 import { AccountInfoContext, ViewContext } from "../../Contexts";
 
@@ -11,8 +15,7 @@ export default function MenuBar() {
 
     let navigation = [...navigationOriginal];
 
-    if (accountInfo.accountType === "instructor")
-        navigation[2] = "Edit";
+    if (accountInfo.accountType === "instructor") navigation[2] = "Edit";
 
     return (
         <Disclosure as="nav" className="bg-red-950">
@@ -23,13 +26,21 @@ export default function MenuBar() {
                             <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                                 <DisclosureButton className="relative inline-flex items-center justify-center rounded-md p-2 text-zinc-400 hover:bg-zinc-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
                                     <span className="absolute -inset-0.5" />
-                                    <span className="sr-only">Open main menu</span>
+                                    <span className="sr-only">
+                                        Open main menu
+                                    </span>
                                     {open ? (
-                                        <div className="block h-6 w-6" aria-hidden="true">
+                                        <div
+                                            className="block h-6 w-6"
+                                            aria-hidden="true"
+                                        >
                                             X
                                         </div>
                                     ) : (
-                                        <div className="block h-6 w-6" aria-hidden="true">
+                                        <div
+                                            className="block h-6 w-6"
+                                            aria-hidden="true"
+                                        >
                                             ...
                                         </div>
                                     )}
@@ -44,12 +55,19 @@ export default function MenuBar() {
                                         {navigation.map((item) => (
                                             <button
                                                 key={item}
-                                                className={`${item === view[0]
-                                                    ? "bg-zinc-900 text-white"
-                                                    : "text-zinc-300 hover:bg-zinc-700 hover:text-white"
-                                                    } rounded-md px-3 py-2 text-sm font-medium`}
-                                                aria-hidden={item === view[0] ? "page" : undefined}
-                                                onClick={() => setView([item, 'main'])}
+                                                className={`${
+                                                    item === view[0]
+                                                        ? "bg-zinc-900 text-white"
+                                                        : "text-zinc-300 hover:bg-zinc-700 hover:text-white"
+                                                } rounded-md px-3 py-2 text-sm font-medium`}
+                                                aria-hidden={
+                                                    item === view[0]
+                                                        ? "page"
+                                                        : undefined
+                                                }
+                                                onClick={() =>
+                                                    setView([item, "main"])
+                                                }
                                             >
                                                 {item}
                                             </button>
@@ -62,7 +80,9 @@ export default function MenuBar() {
                                     <button
                                         type="button"
                                         className="relative rounded-md bg-red-900 p-1 m-1 text-yellow-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-zinc-800"
-                                        onClick={() => setView([view[0], 'logout'])}
+                                        onClick={() =>
+                                            setView([view[0], "logout"])
+                                        }
                                     >
                                         Log Out
                                     </button>
@@ -70,7 +90,9 @@ export default function MenuBar() {
                                     <button
                                         type="button"
                                         className="relative rounded-md bg-red-900 p-1 m-1 text-yellow-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-zinc-800"
-                                        onClick={() => setView([view[0], 'login'])}
+                                        onClick={() =>
+                                            setView([view[0], "login"])
+                                        }
                                     >
                                         Log In
                                     </button>
@@ -81,7 +103,9 @@ export default function MenuBar() {
                                     <button
                                         type="button"
                                         className="relative rounded-md bg-red-900 p-1 m-1 text-yellow-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-zinc-800"
-                                        onClick={() => setView([view[0], 'signup'])}
+                                        onClick={() =>
+                                            setView([view[0], "signup"])
+                                        }
                                     >
                                         Sign Up
                                     </button>
@@ -94,12 +118,15 @@ export default function MenuBar() {
                             {navigation.map((item) => (
                                 <DisclosureButton
                                     key={item}
-                                    className={`${item === view[0]
-                                        ? "bg-zinc-900 text-white"
-                                        : "text-zinc-300 hover:bg-zinc-700 hover:text-white"
-                                        } rounded-md px-3 py-2 text-base font-medium`}
-                                    aria-current={item === view[0] ? "page" : undefined}
-                                    onClick={() => setView([item, 'main'])}
+                                    className={`${
+                                        item === view[0]
+                                            ? "bg-zinc-900 text-white"
+                                            : "text-zinc-300 hover:bg-zinc-700 hover:text-white"
+                                    } rounded-md px-3 py-2 text-base font-medium`}
+                                    aria-current={
+                                        item === view[0] ? "page" : undefined
+                                    }
+                                    onClick={() => setView([item, "main"])}
                                 >
                                     {item}
                                 </DisclosureButton>

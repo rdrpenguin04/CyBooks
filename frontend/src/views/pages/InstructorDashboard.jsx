@@ -1,3 +1,1 @@
-export default function InstructorDashboard() {
-    
-}
+export default function InstructorDashboard() {}
