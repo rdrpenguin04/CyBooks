@@ -167,8 +167,6 @@ app.get('/lessons/:id', async (req, res) => {
 app.post('/lessons', async (req, res) => {
     try {
         console.log('POST /lessons');
-        let result = await lessons.insertOne(req.body);
-        let id = base64url.fromBase64(result.insertedId.toString('base64'));
 
         let liveSession = loggedInUsers[req.cookies['cybooks-session']];
         if (liveSession.accountType !== 'instructor') {
@@ -176,6 +174,9 @@ app.post('/lessons', async (req, res) => {
             return;
         }
         req.body.author_id = liveSession.id;
+
+        let result = await lessons.insertOne(req.body);
+        let id = base64url.fromBase64(result.insertedId.toString('base64'));
 
         console.log(`new id: ${id}`);
         res.status(201).location(`/lessons/${id}`).json({ id, title: req.body.title });
