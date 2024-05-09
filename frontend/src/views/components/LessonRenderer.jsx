@@ -69,7 +69,7 @@ hljs.registerLanguage("javascript", javascript);
 export default function LessonRenderer({ editor, id }) {
   const [flags, setFlags] = useState([]);
   const [lesson, setLesson] = useState(backupLesson);
-  const lessonID = useContext(LessonIDContext).lessonID ?? 'ZjyF9Ea7-eKGiZwS'; // Temporary backup ID in case the context doesn't give me anything
+  const lessonID = useContext(LessonIDContext).lessonID ?? 'Zjzp1AcAdkh7rYgH'; // Temporary backup ID in case the context doesn't give me anything
   console.log("Lesson ID:", lessonID);
 
   useEffect(() => {
@@ -104,8 +104,9 @@ export default function LessonRenderer({ editor, id }) {
       console.log(lessonID);
       await fetch(`//localhost:8081/lessons/${lessonID}`).then((x) =>
         (x.json().then(j => {
-            if(x.status.toString() === "200") {
-                setLesson(j);
+            if(!j.error) {
+                console.log(j);
+                // setLesson(j);
             } else {
                 console.error(j);
                 console.error("Backup lesson used due to server error");
@@ -276,25 +277,25 @@ export default function LessonRenderer({ editor, id }) {
                 : "Differences detected"
             );
         
-            // fetch("//localhost:8081/lessons", {
-            //   method: "POST",
-            //   headers: {
-            //     "Content-Type": "application/json",
-            //   },
-            //   body: JSON.stringify(json),
-            //   credentials: "include",
-            // })
-            //   .then((response) => response.json())
-            //   .then((res) => {
-            //     if (res.error) {
-            //       console.error(res.error);
-            //     } else {
-            //       console.log(res);
-            //     }
-            //   })
-            //   .catch((error) => {
-            //     console.log(`network error: ${error}`);
-            //   });
+            fetch("//localhost:8081/lessons", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(json),
+              credentials: "include",
+            })
+              .then((response) => response.json())
+              .then((res) => {
+                if (res.error) {
+                  console.error(res.error);
+                } else {
+                  console.log(res);
+                }
+              })
+              .catch((error) => {
+                console.log(`network error: ${error}`);
+              });
         }}
           className="bg-green-800 p-2 mt-2 mr-2 rounded font-semibold"
         >
