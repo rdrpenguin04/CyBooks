@@ -74,31 +74,36 @@ export default function LessonRenderer({ editor, id }) {
 
   useEffect(() => {
     (async () => {
-        fetch("//localhost:8081/students/me/completions", {
+        fetch("//localhost:8081/students/me/completions/"+lessonID, {
           credentials: "include",
         })
-          .then((x) => {if(x.status !== 200) console.error(x.json()); else return x.json();})
+          .then((x) => {
+            console.log("Raw completion object:", x);
+            if(x.status !== 200) console.error(x.json());
+            else return x.json();
+        })
           .then(async (completions) => {
             console.log("Completions: ", completions);
             if(!completions) {
-
+                console.error("Completions not found");
             } else {
-            for (let completion of completions) {
-              console.log(completion.lessonID);
-              //   let lesson = await fetch(
-              //     `//localhost:8081/lessons/${completion.lesson}`
-              //   ).then((x) => x.json());
-              //   completion.title = lesson.title;
-            }
+            if(completions.checkpoints.length === 0) {
+                Array.from(
+                    document.getElementsByClassName("interactiveComponent")
+                  ).forEach((el, index) => {
+                    var f = [...flags];
+                    f.push(false);
+                    setFlags(f);
+                  });   
+            } else {
+                var f = [];
+                for (let completion of completions.checkpoints) {
+                    f.push(completion);
+                }
+                setFlags(f);
+                console.log("Flags: ", flags);
+            }   
         }
-
-        Array.from(
-        document.getElementsByClassName("interactiveComponent")
-      ).forEach((el, index) => {
-        var f = [...flags];
-        f.push(false);
-        setFlags(f);
-      });
       });
 
       console.log(lessonID);
@@ -115,7 +120,7 @@ export default function LessonRenderer({ editor, id }) {
       );
       console.log(lesson);
     })();
-  }, [lesson]);
+  }, []);
 
   if(lesson === null) return <div
   className="text-center text-4xl font-semibold"
@@ -200,7 +205,7 @@ export default function LessonRenderer({ editor, id }) {
             </div>
             {card.interactive && card.interactive.type === "code-editor" && (
               <div id={"card-" + cardIndex + "-interactive"}>
-                <CodeEditor id={interactiveIndex++}>
+                <CodeEditor id={interactiveIndex++} flags={flags} setFlags={setFlags}>
                   {card.interactive.initial}
                 </CodeEditor>
               </div>
@@ -249,6 +254,40 @@ export default function LessonRenderer({ editor, id }) {
           </Card>
         );
       })}
+
+    {!editor && (
+            <Button
+            id="complete-button"
+            onClick={() => {
+                fetch("//localhost:8081/students/me/completions/"+lessonID, {
+                    method: "PUT",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        progress: flags.length>0?flags.reduce((total, flag) => total+(flag?1:0))/flags.length:1,
+                        checkpoints: flags
+                    }),
+                    credentials: "include",
+                  })
+                    .then((response) => response.json())
+                    .then((res) => {
+                      if (res.error) {
+                        console.error(res.error);
+                      } else {
+                        console.log(res);
+                      }
+                    })
+                    .catch((error) => {
+                      console.log(`network error: ${error}`);
+                    });
+      
+            }}
+            className="bg-green-800 p-2 mt-2 mr-2 rounded font-semibold"
+            >
+            Complete
+            </Button>
+        )}
 
       {editor && (
         <Button

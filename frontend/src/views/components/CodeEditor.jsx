@@ -1,13 +1,15 @@
 import hljs from "highlight.js/lib/core";
 import javascript from "highlight.js/lib/languages/javascript";
 import { Button } from "@headlessui/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 // Then register the languages you need
 hljs.registerLanguage("javascript", javascript);
 
 
 export default function CodeEditor(props) {
+    let [complete, setComplete] = useState(false);
+
   useEffect(() => {
     // document.getElementById("editBox-"+props.id.toString()).dispatchEvent(new Event("input"));
     document.getElementById("highlightBox-" + props.id).innerHTML =
@@ -39,8 +41,9 @@ export default function CodeEditor(props) {
       </pre>
       <Button
         id={"runCode-" + props.id}
-        className="bg-green-800 p-2 rounded font-semibold my-2"
+        className="bg-green-800 p-2 rounded font-semibold my-2 mr-2"
         onClick={() => {
+            setComplete(true);
             var userCode = document.getElementById("editBox-" + props.id).innerText;
             var output = document.getElementById("consoleOutput-" + props.id);
           (function (console, document, window, location, Function) {
@@ -52,6 +55,7 @@ export default function CodeEditor(props) {
                 if (res) output.innerHTML += `<span style="color: cyan;">Return value: </span>${typeof res === "object"?JSON.stringify(res):res}`
             } catch (e) {
                 output.innerHTML = `<span style="color: red;">${e.toString()}</span>`;
+                setComplete(false);
                 // if(e.lineNumber !== undefined && e.columnNumber !== undefined) {
                 //     output.innerHTML += `<br /><span style="color: grey;">Caught at ${e.lineNumber}:${e.columnNumber}</span>`;
                 // }
@@ -64,7 +68,7 @@ export default function CodeEditor(props) {
         }}
       >
         Run
-       </Button>{/* <span className={"text-" + (props.flags[props.id]?"green":"red") + "-500"}></span> */}
+       </Button><span className={"text-" + (complete?"green":"red") + "-500"}>{complete?"Complete":"Not complete"}</span>
       <code>
         <div id={"consoleOutput-" + props.id} className="bg-black p-2 rounded">
           <span className="text-zinc-500">Console output will appear here</span>
